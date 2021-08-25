@@ -1,0 +1,38 @@
+Bootstrap: docker
+From: registry.access.redhat.com/ubi7/ubi:7.9
+
+%files
+    mirrors.yaml mirrors.yaml
+    cache.tar.gz /cache.tar.gz
+    packages.yaml packages.yaml
+%post 
+    yum -y install tar
+    yum -y install wget
+    yum -y install bzip2
+    yum -y install git
+    yum -y install gcc
+    yum -y install patch
+    yum -y install file
+    wget https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/p/patchelf-0.12-1.el7.x86_64.rpm
+    rpm -Uvh patchelf*rpm
+    yum -y install patchelf
+    yum -y install libnl3
+
+    cd / && tar -xvf /cache.tar.gz
+    chgrp -R root /mahti_build_cache
+    chown -R root /mahti_build_cache
+    chmod -R o+rx /mahti_build_cache
+
+    git clone https://github.com/spack/spack.git /spack
+    source /spack/share/spack/setup-env.sh
+    cp mirrors.yaml  /spack/etc/spack/defaults/mirrors.yaml
+    cp packages.yaml  /spack/etc/spack/defaults/packages.yaml 
+    
+    cd /mahti_build_cache 
+    spack buildcache update-index
+    spack buildcache install -uo gcc
+    spack compiler add $(dirname "$(find /spack/opt/spack/linux-rhel7-x86_64/ -name "gcc"  | grep bin)")
+    cp ~/.spack/linux/compilers.yaml /spack/etc/spack/defaults/compilers.yaml
+    spack buildcache install -uo openmpi@4.1.0
+
+    rm -rf /mahti_build_cache

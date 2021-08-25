@@ -1,0 +1,20 @@
+Bootstrap: localimage
+From: conda_mpi_4.0.3.sif
+
+%post
+    yum -y install make
+    yum -y install wget
+    yum -y install git
+
+    mkdir /software
+    cd /software
+
+    git clone https://github.com/intel/mpi-benchmarks.git
+    export PATH="$PATH:/MPI/miniconda3/bin"
+    export CC="mpicc -Wl,--as-needed"
+    export CXX="mpicxx -Wl,--as-needed"
+    export LDFLAGS="-Wl,--as-needed"
+    cd mpi-benchmarks/
+    make
+
+    rm -rf /MPI

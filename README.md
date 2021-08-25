@@ -17,7 +17,7 @@ Note: The singularity container build process e.g. building software from source
 
 This build process uses miniconda for installing openmpi. I'm  sure that downloading openmpi from source would work as well.
 
-<details><summary>conda_mpi_4.0.3.def</summary>
+<details><summary>gcc-7_mpi_4.0.3.def</summary>
 
 ```
 Bootstrap: docker
@@ -146,7 +146,7 @@ export UCX_LOG_LEVEL=DEBUG
 
 All and all, your batch file can look something like this
 
-<details><summary>batch.sh</summary>
+<details><summary>example_batch.sh</summary>
 
 ```
 #!/bin/bash
@@ -171,7 +171,7 @@ srun link_mpi_mahti.sh
 
 The OpenMPI container is equipped with GCC-7, this is not a problem when building C programs since GCC 7 is compatible with GCC 9. Nonetheless with Fortran programs this is an issue. Thus the original conda_mpi_4.0.3.sif container will not be viable. Below is a .def file that can produce a singularity container with GCC/10.3.0 and OpenMPI/4.1.0. This is the container that I built CloverLeaf on top of. 
 
-</details>
+
 
 This container uses the identical stack as built on Mahti, thus you will need mahti build cache to be able to produce this container. The cache should be available at "/scratch/project_2001659/nortamoh/cache.tar.gz" on Mahti
 
@@ -221,8 +221,12 @@ From: registry.access.redhat.com/ubi7/ubi:7.9
 
 </details>
 
+An example of building a [CloverLeaf](https://github.com/UK-MAC/CloverLeaf_ref) container using the gcc-10 container is in the folder [./singularity_def_files/CloverLeaf.def](./singularity-def-files/CloverLeaf.def)
+
 ## Performance
 
-Actual performance results will be available in the ![benchmark-results](https://gitlab.ci.csc.fi/compen/hpc-support/benchmark-results/-/tree/master/singularity-mpi) repository. 
+Actual performance results will be available in the [benchmark-results](https://gitlab.ci.csc.fi/compen/hpc-support/benchmark-results/-/tree/master/singularity-mpi) repository. 
 
 So far the overhead for a single unit operation is minimal, with larger memory communication the unit overhead accumulates, but the error is not significant. Or at least it is insignificant enough, such that there is promise in using a singularity container in HPC applications. Most of the differences can be clumped up to normal error and fluctuation between runs.
+
+Some odd performance can be seen in Intel-MPI-benchmark when the message sizes start to reach the order of 16 megabytes. This could be a consequence of the benchmark itself, or an underlying issue with the container coupled with Mahtis MPI stack.

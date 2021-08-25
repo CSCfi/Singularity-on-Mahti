@@ -1,0 +1,14 @@
+Bootstrap: docker
+From: registry.access.redhat.com/ubi7/ubi:7.9
+
+%post
+    yum -y install wget
+    cd /
+    mkdir MPI
+    cd MPI
+    wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh
+    bash Miniconda3-py39_4.9.2-Linux-x86_64.sh -b -p $(readlink -f miniconda3)
+    miniconda3/bin/conda install -c conda-forge openmpi-mpicc==4.0.3
+    miniconda3/bin/conda install -c conda-forge openmpi-mpicxx==4.0.3
+    miniconda3/bin/conda install -c conda-forge openmpi-mpifort==4.0.3
+

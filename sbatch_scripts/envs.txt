@@ -1,0 +1,4 @@
+export LD_LIBRARY_PATH
+export PMIX_MCA_gds=hash
+export UCX_TLS=ib,posix,self 
+export UCX_LOG_LEVEL=DEBUG

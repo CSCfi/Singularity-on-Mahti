@@ -1,0 +1,21 @@
+Bootstrap: localimage
+From: ../gcc-10/gcc-10_mpi-4.1.0.sif
+
+%files
+    ./CloverLeaf_ref /CloverLeaf_ref
+
+%post
+    yum -y install make
+
+    cd /CloverLeaf_ref
+
+    export PATH="$PATH:/spack/opt/spack/linux-rhel7-x86_64/gcc-10.3.0/openmpi-4.1.0-kot6g42zk5g4giqmbvosb6jujwegendq/bin"
+    export FC="mpif90 -Wl,--as-needed"
+    export CC="mpicc -Wl,--as-needed"
+
+    mpif90 --version
+    mpicc --version
+    make COMPILER=GNU
+
+    #deleting the spack build dir will delete MPI and everything used to build it
+    rm -rf /spack
